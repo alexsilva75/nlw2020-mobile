@@ -7,7 +7,14 @@ import {Feather as Icon} from '@expo/vector-icons'
 
 import logo from '../../assets/logo.png'
 
-const Home = props => (
+const Home = props => {
+    const navigation = useNavigation()
+
+    function onNavigateToPointsHandler(){
+        navigation.navigate('Points')
+    }
+
+    return (
     <ImageBackground
         source={require('../../assets/home-background.png')}
         style={styles.container}
@@ -29,7 +36,7 @@ const Home = props => (
         <View style={styles.footer}>
             <RectButton
                 style={styles.button}
-                onPress={() => { }}>
+                onPress={onNavigateToPointsHandler}>
                 <View style={styles.buttonIcon}>
                     <Text>
                         <Icon 
@@ -45,7 +52,7 @@ const Home = props => (
             </RectButton>
         </View>
     </ImageBackground>
-)
+)}
 
 const styles = StyleSheet.create({
     container: {
