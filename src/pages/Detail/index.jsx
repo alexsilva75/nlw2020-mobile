@@ -1,28 +1,58 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Image,
-  SafeAreaView
+  SafeAreaView,
+  Linking
 } from 'react-native'
 
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 import Constants from 'expo-constants'
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons'
 import { RectButton } from 'react-native-gesture-handler'
+import * as MailComposer from 'expo-mail-composer';
+
+import api from '../../services/api'
 
 const Detail = props => {
+  const [data, setData] = useState({})
   const navigation = useNavigation()
+  const route = useRoute()
+
+  useEffect(() => {
+    api.get(`points/${route.params.pointId}`)
+      .then(response => {
+        setData(response.data)
+      })
+  }, [])
 
   function onNavigateBackHandler() {
     navigation.goBack()
   }
 
+  function composeMailHandler() {
+    MailComposer.composeAsync({
+      subject: 'Interesse em coleta de materiais',
+      recipients: [data.point.email],
+
+    })
+  }
+
+  function whatsappHandler() {
+    Linking.openURL(`whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interesse em na coleta de resíduos`)
+  }
+
+
+  if (!data.point) {
+    return null
+  }
+
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <TouchableOpacity>
           <Icon name="arrow-left"
@@ -32,32 +62,32 @@ const Detail = props => {
         </TouchableOpacity>
         <Image
           style={styles.pointImage}
-          source={{ uri: 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60' }}
+          source={{ uri: data.point.image }}
         />
-        <Text style={styles.pointName}>Mercadão do João</Text>
-        <Text style={styles.pointItems}>Lâmpadas, Óleo de Cozinha</Text>
+        <Text style={styles.pointName}>{data.point.name}</Text>
+        <Text style={styles.pointItems}>{data.items.map(item => item.title).join(', ')}</Text>
 
         <View style={styles.address}>
           <Text style={styles.addressTitle}>Enderço</Text>
-          <Text style={styles.addressContent}>Santo Amaro, Bahia</Text>
+          <Text style={styles.addressContent}>{data.point.city}, {data.point.uf}</Text>
         </View>
 
       </View>
 
       <View style={styles.footer}>
-        <RectButton 
+        <RectButton
           style={styles.button}
-          onPress={() => {}}
-          >
-          <FontAwesome name="whatsapp" size={20} color="#fff"/>
+          onPress={whatsappHandler}
+        >
+          <FontAwesome name="whatsapp" size={20} color="#fff" />
           <Text style={styles.buttonText}>Whatsapp</Text>
         </RectButton>
 
-        <RectButton 
+        <RectButton
           style={styles.button}
-          onPress={() => {}}
-          >
-          <Icon name="mail" size={20} color="#fff"/>
+          onPress={composeMailHandler}
+        >
+          <Icon name="mail" size={20} color="#fff" />
           <Text style={styles.buttonText}>E-mail</Text>
         </RectButton>
       </View>
