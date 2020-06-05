@@ -147,7 +147,7 @@ const Points = props => {
                         <Image
                           style={styles.mapMarkerImage}
                           //source={{ uri: 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60' }}
-                          source={{ uri: point.image }}
+                          source={{ uri: point.image_url }}
                         />
                         <Text style={styles.mapMarkerTitle}>{point.name}</Text>
 
